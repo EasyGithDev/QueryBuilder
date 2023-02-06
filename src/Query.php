@@ -18,14 +18,15 @@ class Query
     public function select(array $properties = ['*'])
     {
         $this->properties = $properties;
-        $this->query |= SqlWord::SELECT->value;
+        $this->flag(SqlWord::SELECT->value);
+
         return $this;
     }
 
     public function from(array $tables)
     {
         $this->tables = $tables;
-        $this->query |= SqlWord::FROM->value;
+        $this->flag(SqlWord::FROM->value);
 
         return $this;
     }
@@ -33,7 +34,7 @@ class Query
     public function where(array $where)
     {
         $this->where[] = array_merge(['AND'], $where);
-        $this->query |= SqlWord::WHERE->value;
+        $this->flag(SqlWord::WHERE->value);
 
         return $this;
     }
@@ -41,7 +42,7 @@ class Query
     public function orWhere(array $where)
     {
         $this->where[] = array_merge(['OR'], $where);
-        $this->query |= SqlWord::WHERE->value;
+        $this->flag(SqlWord::WHERE->value);
 
         return $this;
     }
@@ -49,8 +50,7 @@ class Query
     public function groupBy(array $groupBy)
     {
         $this->groupBy = $groupBy;
-        $this->query |= SqlWord::GROUPE_BY->value;
-
+        $this->flag(SqlWord::GROUPE_BY->value);
         return $this;
     }
 
@@ -62,21 +62,24 @@ class Query
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function toSql(): string
     {
         $str = '';
 
-        if (($this->query & SqlWord::SELECT->value) == SqlWord::SELECT->value) {
+        if ($this->check(SqlWord::SELECT->value)) {
             $str .= SqlWord::SELECT->display() . self::SPACE;
             $str .= implode(self::DELIMITER, $this->properties) . self::SPACE;
         }
 
-        if (($this->query & SqlWord::FROM->value) == SqlWord::FROM->value) {
+        if ($this->check(SqlWord::FROM->value)) {
             $str .= SqlWord::FROM->display() . self::SPACE;
             $str .= implode(self::DELIMITER, $this->tables) . self::SPACE;
         }
 
-        if (($this->query & SqlWord::WHERE->value) == SqlWord::WHERE->value) {
+        if ($this->check(SqlWord::WHERE->value)) {
             $str .= SqlWord::WHERE->display() . self::SPACE;
             // echo '<pre>', print_r($this->where), '</pre>';
 
@@ -103,12 +106,12 @@ class Query
             $str .=  self::SPACE;
         }
 
-        if (($this->query & SqlWord::GROUPE_BY->value) == SqlWord::GROUPE_BY->value) {
+        if ($this->check(SqlWord::GROUPE_BY->value)) {
             $str .= SqlWord::GROUPE_BY->display() . self::SPACE;
             $str .= implode(self::SPACE, $this->groupBy) . self::SPACE;
         }
 
-        if (($this->query & SqlWord::ORDER->value) == SqlWord::ORDER->value) {
+        if ($this->check(SqlWord::ORDER->value)) {
             $str .= SqlWord::ORDER->display() . self::SPACE;
             $str .= implode(self::DELIMITER, $this->order) . self::SPACE;
             $str .= $this->sqlOrder->name;
@@ -117,11 +120,43 @@ class Query
         return $str;
     }
 
+
+    /**
+     * @param int $flag
+     * 
+     * @return bool
+     */
+    private function check(int $flag): bool
+    {
+        return (($this->query & $flag) == $flag);
+    }
+
+    /**
+     * @param int $flag
+     * 
+     * @return void
+     */
+    private function flag(int $flag): void
+    {
+        $this->query |= $flag;
+    }
+
+
+    /**
+     * @param string $str
+     * 
+     * @return string
+     */
     private function quote(string $str): string
     {
         return '"' . $str . '"';
     }
 
+    /**
+     * @param array $array
+     * 
+     * @return string
+     */
     private function whereSerialize(array $array): string
     {
         [$field, $operator, $value] = $array;
