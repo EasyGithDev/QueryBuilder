@@ -42,9 +42,9 @@ class Query
      * 
      * @return [type]
      */
-    public function from(array $tables): self
+    public function from(array|string $tables): self
     {
-        $this->tables = $tables;
+        $this->tables = is_array($tables) ? $tables : [$tables];
         $this->flag(SqlWord::FROM->value);
 
         return $this;
@@ -159,7 +159,7 @@ class Query
             $str .= $this->sqlOrder->name;
         }
 
-        return $str;
+        return trim($str);
     }
 
 
