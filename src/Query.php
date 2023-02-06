@@ -14,8 +14,12 @@ class Query
     protected $groupBy = [];
     protected $order = [];
     protected $sqlOrder = null;
-
-    public function select(array $properties = ['*'])
+    /**
+     * @param array $properties
+     * 
+     * @return self
+     */
+    public function select(array $properties = ['*']): self
     {
         $this->properties = $properties;
         $this->flag(SqlWord::SELECT->value);
@@ -23,7 +27,12 @@ class Query
         return $this;
     }
 
-    public function from(array $tables)
+    /**
+     * @param array $tables
+     * 
+     * @return [type]
+     */
+    public function from(array $tables): self
     {
         $this->tables = $tables;
         $this->flag(SqlWord::FROM->value);
@@ -31,7 +40,12 @@ class Query
         return $this;
     }
 
-    public function where(array $where)
+    /**
+     * @param array $where
+     * 
+     * @return [type]
+     */
+    public function where(array $where): self
     {
         $this->where[] = array_merge(['AND'], $where);
         $this->flag(SqlWord::WHERE->value);
@@ -39,7 +53,12 @@ class Query
         return $this;
     }
 
-    public function orWhere(array $where)
+    /**
+     * @param array $where
+     * 
+     * @return [type]
+     */
+    public function orWhere(array $where): self
     {
         $this->where[] = array_merge(['OR'], $where);
         $this->flag(SqlWord::WHERE->value);
@@ -47,17 +66,28 @@ class Query
         return $this;
     }
 
-    public function groupBy(array $groupBy)
+    /**
+     * @param array $groupBy
+     * 
+     * @return [type]
+     */
+    public function groupBy(array $groupBy): self
     {
         $this->groupBy = $groupBy;
         $this->flag(SqlWord::GROUPE_BY->value);
         return $this;
     }
 
-    public function order(array $order, SqlOrder $sqlOrder = SqlOrder::ASC)
+    /**
+     * @param array $order
+     * @param SqlOrder $sqlOrder
+     * 
+     * @return [type]
+     */
+    public function order(array $order, SqlOrder $sqlOrder = SqlOrder::ASC): self
     {
         $this->order = $order;
-        $this->query |= SqlWord::ORDER->value;
+        $this->query |= SqlWord::ORDER_BY->value;
         $this->sqlOrder = $sqlOrder;
         return $this;
     }
@@ -72,6 +102,8 @@ class Query
         if ($this->check(SqlWord::SELECT->value)) {
             $str .= SqlWord::SELECT->display() . self::SPACE;
             $str .= implode(self::DELIMITER, $this->properties) . self::SPACE;
+        } else {
+            $str .= SqlWord::SELECT->display() . self::SPACE . '*' . self::SPACE;
         }
 
         if ($this->check(SqlWord::FROM->value)) {
@@ -111,8 +143,8 @@ class Query
             $str .= implode(self::SPACE, $this->groupBy) . self::SPACE;
         }
 
-        if ($this->check(SqlWord::ORDER->value)) {
-            $str .= SqlWord::ORDER->display() . self::SPACE;
+        if ($this->check(SqlWord::ORDER_BY->value)) {
+            $str .= SqlWord::ORDER_BY->display() . self::SPACE;
             $str .= implode(self::DELIMITER, $this->order) . self::SPACE;
             $str .= $this->sqlOrder->name;
         }

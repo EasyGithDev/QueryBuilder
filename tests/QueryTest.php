@@ -8,7 +8,6 @@ use QueryBuilder\Query;
 final class QueryTest extends TestCase
 {
 
-
     public function testFirst(): void
     {
         $this->assertEquals(
@@ -23,7 +22,7 @@ final class QueryTest extends TestCase
         $sql =   (new Query)->select()
             ->from(['authors'])
             ->toSql();
-            
+
         $this->assertEquals(
             $sql,
             'SELECT * FROM authors'
