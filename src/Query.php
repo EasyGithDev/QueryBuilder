@@ -8,23 +8,33 @@ class Query
     const DELIMITER = ',';
 
     protected $query = 0;
-    protected $properties = [];
+    protected $select = [];
     protected $tables = [];
     protected $where = [];
     protected $groupBy = [];
     protected $order = [];
     protected $sqlOrder = null;
     /**
-     * @param array $properties
+     * @param array $select
      * 
      * @return self
      */
-    public function select(array $properties = ['*']): self
+    public function select(array $select = ['*']): self
     {
-        $this->properties = $properties;
+        $this->select = $select;
         $this->flag(SqlWord::SELECT->value);
 
         return $this;
+    }
+
+    /**
+     * @param string $select
+     * 
+     * @return self
+     */
+    public function rawSelect(string $select = '*'): self
+    {
+        return $this->select([$select]);
     }
 
     /**
@@ -101,7 +111,7 @@ class Query
 
         if ($this->check(SqlWord::SELECT->value)) {
             $str .= SqlWord::SELECT->display() . self::SPACE;
-            $str .= implode(self::DELIMITER, $this->properties) . self::SPACE;
+            $str .= implode(self::DELIMITER, $this->select) . self::SPACE;
         } else {
             $str .= SqlWord::SELECT->display() . self::SPACE . '*' . self::SPACE;
         }
