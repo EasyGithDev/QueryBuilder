@@ -15,11 +15,11 @@ class Query
     protected $order = [];
     protected $sqlOrder = null;
     /**
-     * @param array $select
+     * @param array|string $select
      * 
      * @return self
      */
-    public function select(array $select = ['*']): self
+    public function select(array|string $select = ['*']): self
     {
         $this->select = $select;
         $this->flag(SqlWord::SELECT->value);
@@ -38,7 +38,7 @@ class Query
     }
 
     /**
-     * @param array $tables
+     * @param array|string $tables
      * 
      * @return [type]
      */
@@ -51,11 +51,11 @@ class Query
     }
 
     /**
-     * @param array $where
+     * @param array|string $where
      * 
      * @return [type]
      */
-    public function where(array $where): self
+    public function where(array|string $where): self
     {
         $this->where[] = array_merge(['AND'], $where);
         $this->flag(SqlWord::WHERE->value);
@@ -64,11 +64,11 @@ class Query
     }
 
     /**
-     * @param array $where
+     * @param array|string $where
      * 
      * @return [type]
      */
-    public function orWhere(array $where): self
+    public function orWhere(array|string $where): self
     {
         $this->where[] = array_merge(['OR'], $where);
         $this->flag(SqlWord::WHERE->value);
@@ -77,11 +77,11 @@ class Query
     }
 
     /**
-     * @param array $groupBy
+     * @param array|string $groupBy
      * 
      * @return [type]
      */
-    public function groupBy(array $groupBy): self
+    public function groupBy(array|string $groupBy): self
     {
         $this->groupBy = $groupBy;
         $this->flag(SqlWord::GROUPE_BY->value);
@@ -89,16 +89,17 @@ class Query
     }
 
     /**
-     * @param array $order
+     * @param array|string $order
      * @param SqlOrder $sqlOrder
      * 
      * @return [type]
      */
-    public function order(array $order, SqlOrder $sqlOrder = SqlOrder::ASC): self
+    public function order(array|string $order, SqlOrder $sqlOrder = SqlOrder::ASC): self
     {
-        $this->order = $order;
-        $this->query |= SqlWord::ORDER_BY->value;
+        $this->order = is_string($order) ? [$order] : $order;
         $this->sqlOrder = $sqlOrder;
+        $this->flag(SqlWord::ORDER_BY->value);
+
         return $this;
     }
 
@@ -140,7 +141,7 @@ class Query
                         $str .= 'AND' . self::SPACE;
                     }
                 }
-                $str .= ' )';
+                $str .= ')';
 
                 $str .=  self::SPACE;
             }
@@ -195,13 +196,18 @@ class Query
     }
 
     /**
-     * @param array $array
+     * @param array|string $array|string
      * 
      * @return string
      */
     private function whereSerialize(array $array): string
     {
-        [$field, $operator, $value] = $array;
+        if (count($array) == 2) {
+            [$field,  $value] = $array;
+            $operator = '=';
+        } else {
+            [$field, $operator, $value] = $array;
+        }
         return $field . self::SPACE .
             $operator . self::SPACE .
             (is_numeric($value) ? $value : $this->quote($value)) . self::SPACE;
