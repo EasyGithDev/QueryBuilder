@@ -2,6 +2,8 @@
 
 namespace QueryBuilder;
 
+use QueryBuilder\Sql\LogicalOperator;
+
 class Query
 {
     const SPACE = ' ';
@@ -60,7 +62,7 @@ class Query
     public function where(array $where): self
     {
         $where = is_array($where[0]) ? $where : [$where];
-        $this->where[] = array_merge(['AND'], $where);
+        $this->where[] = array_merge([LogicalOperator::AND->name], $where);
         $this->flag(SqlWord::WHERE->value);
 
         return $this;
@@ -73,7 +75,7 @@ class Query
      */
     public function orWhere(array $where): self
     {
-        $this->where[] = array_merge(['OR'], $where);
+        $this->where[] = array_merge([LogicalOperator::OR->name], $where);
         $this->flag(SqlWord::WHERE->value);
 
         return $this;
@@ -148,7 +150,7 @@ class Query
                 foreach ($val as $k => $v) {
                     $str .=  $this->whereSerialize($v);
                     if ($len != $k) {
-                        $str .= 'AND' . self::SPACE;
+                        $str .= LogicalOperator::AND->name . self::SPACE;
                     }
                 }
                 $str .= ')';
