@@ -1,7 +1,7 @@
 <?php
 
 use QueryBuilder\Query;
-use QueryBuilder\SqlOrder;
+use QueryBuilder\Sql\Order;
 
 require __DIR__ . '/../src/autoload.php';
 
@@ -25,5 +25,13 @@ echo (new Query)->select()
             ['age', '<', 15],
         ]
     )
-    ->order(['name'], SqlOrder::DESC)
+    ->orderBy(['name'], Order::DESC)
     ->toSql();
+
+$query = new Query();
+
+// $query->select()
+//     ->from(['authors'])
+//     ->whereQuery(function($query) {
+//         return $query->where([['age', '>', 18]]);
+//     });

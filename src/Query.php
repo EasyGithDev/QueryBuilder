@@ -5,6 +5,8 @@ namespace QueryBuilder;
 use QueryBuilder\Sql\LogicalOperator;
 use QueryBuilder\Sql\Order;
 use QueryBuilder\Sql\Word;
+use ReflectionClass;
+use ReflectionProperty;
 
 class Query
 {
@@ -70,6 +72,12 @@ class Query
         return $this;
     }
 
+    // public function whereQuery(callable $func): self
+    // {
+    //     var_dump($func($this));
+    //     return $this;
+    // }
+
     /**
      * @param array|string $where
      * 
@@ -82,6 +90,15 @@ class Query
 
         return $this;
     }
+
+    // public function whereIn(string field, array $array): self
+    // {
+    //     $where = is_array($where[0]) ? $where : [$array];
+    //     $this->where[] = array_merge([LogicalOperator::AND->name], $where);
+    //     $this->flag(Word::WHERE->value);
+
+    //     return $this;
+    // }    
 
     /**
      * @param array|string $groupBy
