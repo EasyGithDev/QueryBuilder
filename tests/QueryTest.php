@@ -12,7 +12,7 @@ final class QueryTest extends TestCase
     public function testSelect(): void
     {
         $sql =   (new Query)->select(['lastname', 'firstname'])
-            ->from(['authors'])
+            ->from('authors')
             ->toSql();
 
         $this->assertEquals(
@@ -38,7 +38,7 @@ final class QueryTest extends TestCase
     {
 
         $sql =   (new Query)
-            ->from(['authors'])
+            ->from('authors')
             ->toSql();
 
         $this->assertEquals(
@@ -69,12 +69,12 @@ final class QueryTest extends TestCase
 
         $sql =   (new Query)
             ->from('authors')
-            ->where(['name', '=', 'florent'])
+            ->where(['firstname', '=', 'florent'])
             ->toSql();
 
         $this->assertEquals(
             $sql,
-            'SELECT * FROM authors WHERE ( name = "florent" )'
+            'SELECT * FROM authors WHERE ( firstname = "florent" )'
         );
     }
 
@@ -83,12 +83,12 @@ final class QueryTest extends TestCase
 
         $sql =   (new Query)
             ->from('authors')
-            ->where([['name', 'florent']])
+            ->where([['firstname', 'florent']])
             ->toSql();
 
         $this->assertEquals(
             $sql,
-            'SELECT * FROM authors WHERE ( name = "florent" )'
+            'SELECT * FROM authors WHERE ( firstname = "florent" )'
         );
     }
 
@@ -98,14 +98,14 @@ final class QueryTest extends TestCase
         $sql =   (new Query)
             ->from('authors')
             ->where([
-                ['name', '=', 'florent'],
+                ['firstname', '=', 'florent'],
                 ['birth', '=', '2000-01-01'],
             ])
             ->toSql();
 
         $this->assertEquals(
             $sql,
-            'SELECT * FROM authors WHERE ( name = "florent" AND birth = "2000-01-01" )'
+            'SELECT * FROM authors WHERE ( firstname = "florent" AND birth = "2000-01-01" )'
         );
     }
 
@@ -114,12 +114,12 @@ final class QueryTest extends TestCase
 
         $sql =   (new Query)
             ->from('authors')
-            ->orwhere([['name', 'florent']])
+            ->orwhere([['firstname', 'florent']])
             ->toSql();
 
         $this->assertEquals(
             $sql,
-            'SELECT * FROM authors WHERE ( name = "florent" )'
+            'SELECT * FROM authors WHERE ( firstname = "florent" )'
         );
     }
 
@@ -128,13 +128,13 @@ final class QueryTest extends TestCase
 
         $sql =   (new Query)
             ->from('authors')
-            ->where([['name', 'michel']])
-            ->orwhere([['name', 'florent']])
+            ->where([['firstname', 'michel']])
+            ->orwhere([['firstname', 'florent']])
             ->toSql();
 
         $this->assertEquals(
             $sql,
-            'SELECT * FROM authors WHERE ( name = "michel" ) OR ( name = "florent" )'
+            'SELECT * FROM authors WHERE ( firstname = "michel" ) OR ( firstname = "florent" )'
         );
     }
 
@@ -143,12 +143,12 @@ final class QueryTest extends TestCase
 
         $sql =   (new Query)
             ->from('authors')
-            ->order('name')
+            ->orderBy('firstname')
             ->toSql();
 
         $this->assertEquals(
             $sql,
-            'SELECT * FROM authors ORDER BY name ASC'
+            'SELECT * FROM authors ORDER BY firstname ASC'
         );
     }
 
@@ -157,12 +157,12 @@ final class QueryTest extends TestCase
 
         $sql =   (new Query)
             ->from('authors')
-            ->order('name', SqlOrder::DESC)
+            ->orderBy('firstname', SqlOrder::DESC)
             ->toSql();
 
         $this->assertEquals(
             $sql,
-            'SELECT * FROM authors ORDER BY name DESC'
+            'SELECT * FROM authors ORDER BY firstname DESC'
         );
     }
 
@@ -171,12 +171,43 @@ final class QueryTest extends TestCase
 
         $sql =   (new Query)
             ->from('authors')
-            ->order(['name', 'birth'])
+            ->orderBy(['firstname', 'birth'])
             ->toSql();
 
         $this->assertEquals(
             $sql,
-            'SELECT * FROM authors ORDER BY name,birth ASC'
+            'SELECT * FROM authors ORDER BY firstname,birth ASC'
+        );
+    }
+
+    public function testGroupBy(): void
+    {
+
+        $sql =   (new Query)
+            ->select(['count(*)', 'firstname'])
+            ->from('authors')
+            ->groupBy('firstname')
+            ->toSql();
+
+        $this->assertEquals(
+            $sql,
+            'SELECT count(*),firstname FROM authors GROUP BY firstname'
+        );
+    }
+
+    public function testGroupByOrder(): void
+    {
+
+        $sql =   (new Query)
+            ->select(['count(*) as nb', 'firstname'])
+            ->from('authors')
+            ->groupBy('firstname')
+            ->orderBy('nb', sqlOrder::DESC)
+            ->toSql();
+
+        $this->assertEquals(
+            $sql,
+            'SELECT count(*) as nb,firstname FROM authors GROUP BY firstname ORDER BY nb DESC'
         );
     }
 }

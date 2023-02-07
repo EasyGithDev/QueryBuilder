@@ -7,7 +7,7 @@ enum SqlWord : int
     case FROM = 2;
     case WHERE = 4;
     case ORDER_BY = 8;
-    case GROUPE_BY = 16;
+    case GROUP_BY = 16;
 
     public function display()
     {
@@ -16,7 +16,7 @@ enum SqlWord : int
             SqlWord::FROM => 'FROM',
             SqlWord::WHERE => 'WHERE',
             SqlWord::ORDER_BY => 'ORDER BY',
-            SqlWord::GROUPE_BY => 'GROUPE BY',
+            SqlWord::GROUP_BY => 'GROUP BY',
         };
     }
 }

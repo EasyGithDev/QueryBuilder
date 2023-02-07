@@ -84,8 +84,8 @@ class Query
      */
     public function groupBy(array|string $groupBy): self
     {
-        $this->groupBy = $groupBy;
-        $this->flag(SqlWord::GROUPE_BY->value);
+        $this->groupBy = is_string($groupBy) ? [$groupBy] : $groupBy;
+        $this->flag(SqlWord::GROUP_BY->value);
         return $this;
     }
 
@@ -95,7 +95,7 @@ class Query
      * 
      * @return [type]
      */
-    public function order(array|string $order, SqlOrder $sqlOrder = SqlOrder::ASC): self
+    public function orderBy(array|string $order, SqlOrder $sqlOrder = SqlOrder::ASC): self
     {
         $this->order = is_string($order) ? [$order] : $order;
         $this->sqlOrder = $sqlOrder;
@@ -150,8 +150,8 @@ class Query
             $str .=  self::SPACE;
         }
 
-        if ($this->check(SqlWord::GROUPE_BY->value)) {
-            $str .= SqlWord::GROUPE_BY->display() . self::SPACE;
+        if ($this->check(SqlWord::GROUP_BY->value)) {
+            $str .= SqlWord::GROUP_BY->display() . self::SPACE;
             $str .= implode(self::SPACE, $this->groupBy) . self::SPACE;
         }
 
