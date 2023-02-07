@@ -3,6 +3,8 @@
 namespace QueryBuilder;
 
 use QueryBuilder\Sql\LogicalOperator;
+use QueryBuilder\Sql\Order;
+use QueryBuilder\Sql\Word;
 
 class Query
 {
@@ -15,7 +17,7 @@ class Query
     protected $where = [];
     protected $groupBy = [];
     protected $order = [];
-    protected $sqlOrder = null;
+    protected $Order = null;
     protected $having = '';
 
     /**
@@ -26,7 +28,7 @@ class Query
     public function select(array|string $select = ['*']): self
     {
         $this->select = $select;
-        $this->flag(SqlWord::SELECT->value);
+        $this->flag(Word::SELECT->value);
 
         return $this;
     }
@@ -49,7 +51,7 @@ class Query
     public function from(array|string $tables): self
     {
         $this->tables = is_string($tables) ? [$tables] : $tables;
-        $this->flag(SqlWord::FROM->value);
+        $this->flag(Word::FROM->value);
 
         return $this;
     }
@@ -63,7 +65,7 @@ class Query
     {
         $where = is_array($where[0]) ? $where : [$where];
         $this->where[] = array_merge([LogicalOperator::AND->name], $where);
-        $this->flag(SqlWord::WHERE->value);
+        $this->flag(Word::WHERE->value);
 
         return $this;
     }
@@ -76,7 +78,7 @@ class Query
     public function orWhere(array $where): self
     {
         $this->where[] = array_merge([LogicalOperator::OR->name], $where);
-        $this->flag(SqlWord::WHERE->value);
+        $this->flag(Word::WHERE->value);
 
         return $this;
     }
@@ -89,28 +91,28 @@ class Query
     public function groupBy(array|string $groupBy): self
     {
         $this->groupBy = is_string($groupBy) ? [$groupBy] : $groupBy;
-        $this->flag(SqlWord::GROUP_BY->value);
+        $this->flag(Word::GROUP_BY->value);
         return $this;
     }
 
     public function having(string $having): self
     {
         $this->having = $having;
-        $this->flag(SqlWord::HAVING->value);
+        $this->flag(Word::HAVING->value);
         return $this;
     }
 
     /**
      * @param array|string $order
-     * @param SqlOrder $sqlOrder
+     * @param Order $Order
      * 
      * @return [type]
      */
-    public function orderBy(array|string $order, SqlOrder $sqlOrder = SqlOrder::ASC): self
+    public function orderBy(array|string $order, Order $Order = Order::ASC): self
     {
         $this->order = is_string($order) ? [$order] : $order;
-        $this->sqlOrder = $sqlOrder;
-        $this->flag(SqlWord::ORDER_BY->value);
+        $this->Order = $Order;
+        $this->flag(Word::ORDER_BY->value);
 
         return $this;
     }
@@ -122,20 +124,20 @@ class Query
     {
         $str = '';
 
-        if ($this->check(SqlWord::SELECT->value)) {
-            $str .= SqlWord::SELECT->display() . self::SPACE;
+        if ($this->check(Word::SELECT->value)) {
+            $str .= Word::SELECT->display() . self::SPACE;
             $str .= implode(self::DELIMITER, $this->select) . self::SPACE;
         } else {
-            $str .= SqlWord::SELECT->display() . self::SPACE . '*' . self::SPACE;
+            $str .= Word::SELECT->display() . self::SPACE . '*' . self::SPACE;
         }
 
-        if ($this->check(SqlWord::FROM->value)) {
-            $str .= SqlWord::FROM->display() . self::SPACE;
+        if ($this->check(Word::FROM->value)) {
+            $str .= Word::FROM->display() . self::SPACE;
             $str .= implode(self::DELIMITER, $this->tables) . self::SPACE;
         }
 
-        if ($this->check(SqlWord::WHERE->value)) {
-            $str .= SqlWord::WHERE->display() . self::SPACE;
+        if ($this->check(Word::WHERE->value)) {
+            $str .= Word::WHERE->display() . self::SPACE;
             // echo '<pre>', print_r($this->where), '</pre>';
 
             foreach ($this->where as $key => $val) {
@@ -161,20 +163,20 @@ class Query
             $str .=  self::SPACE;
         }
 
-        if ($this->check(SqlWord::GROUP_BY->value)) {
-            $str .= SqlWord::GROUP_BY->display() . self::SPACE;
+        if ($this->check(Word::GROUP_BY->value)) {
+            $str .= Word::GROUP_BY->display() . self::SPACE;
             $str .= implode(self::SPACE, $this->groupBy) . self::SPACE;
 
-            if ($this->check(SqlWord::HAVING->value)) {
-                $str .= SqlWord::HAVING->display() . self::SPACE;
+            if ($this->check(Word::HAVING->value)) {
+                $str .= Word::HAVING->display() . self::SPACE;
                 $str .=  $this->having . self::SPACE;
             }
         }
 
-        if ($this->check(SqlWord::ORDER_BY->value)) {
-            $str .= SqlWord::ORDER_BY->display() . self::SPACE;
+        if ($this->check(Word::ORDER_BY->value)) {
+            $str .= Word::ORDER_BY->display() . self::SPACE;
             $str .= implode(self::DELIMITER, $this->order) . self::SPACE;
-            $str .= $this->sqlOrder->name;
+            $str .= $this->Order->name;
         }
 
         return trim($str);

@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use QueryBuilder\Query;
-use QueryBuilder\SqlOrder;
+use QueryBuilder\Sql\Order;
+use QueryBuilder\Sql\Word;
 
 final class QueryTest extends TestCase
 {
@@ -157,7 +158,7 @@ final class QueryTest extends TestCase
 
         $sql =   (new Query)
             ->from('authors')
-            ->orderBy('firstname', SqlOrder::DESC)
+            ->orderBy('firstname', Order::DESC)
             ->toSql();
 
         $this->assertEquals(
@@ -202,7 +203,7 @@ final class QueryTest extends TestCase
             ->select(['count(*) as nb', 'firstname'])
             ->from('authors')
             ->groupBy('firstname')
-            ->orderBy('nb', sqlOrder::DESC)
+            ->orderBy('nb', Order::DESC)
             ->toSql();
 
         $this->assertEquals(
@@ -219,7 +220,7 @@ final class QueryTest extends TestCase
             ->from('authors')
             ->groupBy('firstname')
             ->having('nb > 1')
-            ->orderBy('nb', sqlOrder::DESC)
+            ->orderBy('nb', Order::DESC)
             ->toSql();
 
         $this->assertEquals(
