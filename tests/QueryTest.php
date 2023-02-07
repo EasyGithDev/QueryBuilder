@@ -210,4 +210,21 @@ final class QueryTest extends TestCase
             'SELECT count(*) as nb,firstname FROM authors GROUP BY firstname ORDER BY nb DESC'
         );
     }
+
+    public function testHaving(): void
+    {
+
+        $sql =   (new Query)
+            ->select(['count(*) as nb', 'firstname'])
+            ->from('authors')
+            ->groupBy('firstname')
+            ->having('nb > 1')
+            ->orderBy('nb', sqlOrder::DESC)
+            ->toSql();
+
+        $this->assertEquals(
+            $sql,
+            'SELECT count(*) as nb,firstname FROM authors GROUP BY firstname HAVING nb > 1 ORDER BY nb DESC'
+        );
+    }
 }

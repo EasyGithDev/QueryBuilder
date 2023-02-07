@@ -14,6 +14,8 @@ class Query
     protected $groupBy = [];
     protected $order = [];
     protected $sqlOrder = null;
+    protected $having = '';
+
     /**
      * @param array|string $select
      * 
@@ -89,6 +91,13 @@ class Query
         return $this;
     }
 
+    public function having(string $having): self
+    {
+        $this->having = $having;
+        $this->flag(SqlWord::HAVING->value);
+        return $this;
+    }
+
     /**
      * @param array|string $order
      * @param SqlOrder $sqlOrder
@@ -153,6 +162,11 @@ class Query
         if ($this->check(SqlWord::GROUP_BY->value)) {
             $str .= SqlWord::GROUP_BY->display() . self::SPACE;
             $str .= implode(self::SPACE, $this->groupBy) . self::SPACE;
+
+            if ($this->check(SqlWord::HAVING->value)) {
+                $str .= SqlWord::HAVING->display() . self::SPACE;
+                $str .=  $this->having . self::SPACE;
+            }
         }
 
         if ($this->check(SqlWord::ORDER_BY->value)) {

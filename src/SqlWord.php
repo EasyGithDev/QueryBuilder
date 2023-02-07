@@ -8,6 +8,8 @@ enum SqlWord : int
     case WHERE = 4;
     case ORDER_BY = 8;
     case GROUP_BY = 16;
+    case HAVING = 32;
+
 
     public function display()
     {
@@ -17,6 +19,7 @@ enum SqlWord : int
             SqlWord::WHERE => 'WHERE',
             SqlWord::ORDER_BY => 'ORDER BY',
             SqlWord::GROUP_BY => 'GROUP BY',
+            SqlWord::HAVING => 'HAVING',
         };
     }
 }
