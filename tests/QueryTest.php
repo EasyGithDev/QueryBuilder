@@ -69,7 +69,7 @@ final class QueryTest extends TestCase
 
         $sql =   (new Query)
             ->from('authors')
-            ->where([['name', '=', 'florent']])
+            ->where(['name', '=', 'florent'])
             ->toSql();
 
         $this->assertEquals(

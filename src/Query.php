@@ -44,7 +44,7 @@ class Query
      */
     public function from(array|string $tables): self
     {
-        $this->tables = is_array($tables) ? $tables : [$tables];
+        $this->tables = is_string($tables) ? [$tables] : $tables;
         $this->flag(SqlWord::FROM->value);
 
         return $this;
@@ -55,8 +55,9 @@ class Query
      * 
      * @return [type]
      */
-    public function where(array|string $where): self
+    public function where(array $where): self
     {
+        $where = is_array($where[0]) ? $where : [$where];
         $this->where[] = array_merge(['AND'], $where);
         $this->flag(SqlWord::WHERE->value);
 
@@ -68,7 +69,7 @@ class Query
      * 
      * @return [type]
      */
-    public function orWhere(array|string $where): self
+    public function orWhere(array $where): self
     {
         $this->where[] = array_merge(['OR'], $where);
         $this->flag(SqlWord::WHERE->value);
